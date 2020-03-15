@@ -39,7 +39,12 @@ import Control.Applicative
 data Min a = Infinito | N a
        deriving Show
 
--- Ayuda: En la instancia requerir que el tipo a sea ordenado (Ord a)
+
+instance (Ord a) => Monoid (Min a) where
+       mempty = Infinito
+       (N a) <> Infinito = N a
+       Infinito <> (N b) = N b
+       (N a) <> (N b) = if a < b then N a else N b
 
 {- #2
  Definir un tipo de datos Max y definir una instancia de Monoid para el mismo
@@ -47,8 +52,17 @@ data Min a = Infinito | N a
 
 -}
 
+data Max a = MenosInfinito | N a
+       deriving Show
+
+instance (Ord a) => Monoid (Max a) where
+       mempty = MenosInfinito
+       (N a) <> MenosInfinito = N a
+       MenosInfinito <> (N b) = N b
+       (N a) <> (N b) = if a > b then N a else N b
+
 -------------------------------------
--- Funtores
+-- Functores
 -------------------------------------
 
 {- #3
@@ -59,14 +73,36 @@ data Min a = Infinito | N a
 data CSList a = Vacia | Singleton a | ConsSnoc a (CSList a) a
        deriving Show
 
+instance Functor CSList where
+       fmap f Vacia = Vacia
+       fmap f (Singleton a) = Singleton (f a)
+       fmap f (ConsSnoc a xs b) = ConsSnoce (f a) (fmap f xs) (f b)
+
 -----------------------------------------
 -- Generics
 -----------------------------------------
 
 {- #4
  Dar una instancia de Generic para CSList
-
 -}
+data CSListG = K () 
+           :+: Id 
+           :+: Id :*: Rec CSListG :*: Id
+
+toG :: CSList -> CSListG
+toG Vacia = Inl (K ())
+toG (Singleton a) = Inr $ Inl $ Id a
+toG (ConsSnoc a xs b) = Inr $ Inr $ FunProd (Id a) $ FunProd (Rec xs) (Id b)
+
+fromG :: CSListG -> CSList
+fromG Inl (K ()) = Vacia
+fromG (Inr (Inr (Id a))) = Singleton a
+fromG (Inr (Inr (FunProd (Id a) (FunProd (Rec xs) (Id b))))) = ConsSnoc a xs b
+
+instance Generic CSList where
+           type Rep CSList = CSListG
+           fromRep = fromG
+           toRep = toG
 
 {- #5
 Usando crush (del módulo Generics) definir una función que calcule en
@@ -88,7 +124,8 @@ Ejemplos:
 
  Por ejemplo:
 -}
-
+data MinMax a = FunProd (Min a) (Max a)
+ 
 instance Crush [] where
   gcrush = gcrush . toRep
 

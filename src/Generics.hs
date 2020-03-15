@@ -262,6 +262,25 @@ crush :: (Generic f, ..., Monoid m) => f m -> m
 
 -}
 
+class Crush Id where
+      crush :: (Monoid m) => f m -> m
+
+
+instance Crush Id where
+      crush (Id a) = a
+
+instance Crush (K b) where
+      crush (K b a) = mempty
+
+instance (Crush f, Crush g) => Crush (f :+: g) where
+      crush (Inl f) = crush f
+      crush (Inr g) = crush g
+
+instance (Crush f, Crush g) => Crush (f :*: g) where
+      crush (f :+: g) = (crush f) <> (crush g)
+
+gcrush :: (Generic f, Crush (Rep f), Monoid m) => f m -> m
+gcrush f = crush f
 --------------------------------------------------
 {- Tipos Recursivos -}
 

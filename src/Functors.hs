@@ -17,10 +17,6 @@ map :: (a -> b) -> [a] -> [b]
 map f []     = []
 map f (x:xs) = f x : map f xs
 
-
-
-
-
 {-
   Podemos definir funciones similares para
     varios tipos de datos
@@ -33,10 +29,6 @@ binmap :: (a -> b) -> Bin a -> Bin b
 binmap f (Leaf a) = Leaf (f a)
 binmap f (Node l r) = Node (binmap f l) (binmap f r)
 
-
-
-
-
 data Tree a = Empty | Branch (Tree a) a (Tree a)
          deriving Show
 
@@ -46,17 +38,11 @@ treemap f (Branch l x  r) = Branch (treemap f l)
                                    (f x)
                                    (treemap f r)
 
-
-
-
-
-
 data GenTree a = Gen a [GenTree a]
          deriving Show
 
 gentreemap :: (a -> b) -> GenTree a -> GenTree b
 gentreemap f (Gen x xs) = Gen (f x) (map (gentreemap f) xs)
-
 
   {-
   Notar que en todos los casos son tipos parametrizados
@@ -65,10 +51,6 @@ gentreemap f (Gen x xs) = Gen (f x) (map (gentreemap f) xs)
 
   ¿Cómo definir una generalización de map?
 
-
-
-
-
   Intuitivamente, podremos generalizar map a un
   constructor de tipos f, si podemos proveer una función
 
@@ -76,9 +58,6 @@ gentreemap f (Gen x xs) = Gen (f x) (map (gentreemap f) xs)
 
   que aplique el argumento a todos los elementos de a
   “almacenados” en f a.
-
-
-
 
   Por lo que podemos definir la siguiente clase de tipos
 
@@ -95,7 +74,6 @@ gentreemap f (Gen x xs) = Gen (f x) (map (gentreemap f) xs)
   (instancia ya provista en el Preludio)
   -}
 
-
 instance Functor Bin where
      fmap = binmap
 
@@ -105,12 +83,6 @@ instance Functor Tree where
 instance Functor GenTree where
      fmap = gentreemap
 
-
-
-
-
-
-
   -- ̣¿Qué pasa con el siguiente tipo de datos?
   --   (que también tiene kind * -> *)
 
@@ -118,9 +90,6 @@ newtype Func a = Func (a -> a)
 
 funcmap :: (a -> b) -> Func a -> Func b
 funcmap g (Func h) = Func id
-
-
-
 
 {-
   Los constructores de tipos que poseen una función fmap con
@@ -135,11 +104,6 @@ funcmap g (Func h) = Func id
   o equivalentemente (por extensionalidad)
           fmap id x = x
    fmap f (fmap g x) = fmap (f . g) x
-
-
-
-
-
 
 La clase Functor
 ================
@@ -156,16 +120,8 @@ La clase Functor
   Pueden verificar que estas ecuaciones se cumplen para
   las instancias dadas de listas, Bin, Tree y GenTree.
 
-
-
-
-
   - El compilador no chequea que se cumplan las ecuaciones.
     Es responsabilidad del programador de las instancias chequearlo.
-
-
-
-
 
  Extensión DeriveFunctor
  =======================
@@ -182,10 +138,6 @@ La clase Functor
    - Escribir :set -XDeriveFunctor en el entorno
      interactivo (ghci)
 
-
-
-
-
 La funcion fmap como operador infijo
 ====================================
 
@@ -198,11 +150,6 @@ La funcion fmap como operador infijo
   *> succ <$> [1..5]
    [2,3,4,5,6]
 -}
-
-
-
-
-
 
 -- ----------------------------------------------------
 -- -- EJERCICIOS de Funtores

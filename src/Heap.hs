@@ -21,10 +21,7 @@ class Heap h where
    -- heaps con merge
   merge :: Ord a => h a -> h a -> h a
 
-
-
   {-# MINIMAL empty, (singleton | insert), findMin, deleteMin, merge #-}
-
 
 --Pairing Heap
 
@@ -58,7 +55,6 @@ instance Heap PHeap where
           mergePairs [] = E
           mergePairs [h] = h
           mergePairs (h1 : h2 : hs) = merge (merge h1 h2) (mergePairs hs)
-
 
 -- Implementando Heapsort
 

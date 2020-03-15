@@ -4,11 +4,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE InstanceSigs #-}
 
-
 module Generics where
 
 import Functors
-
 
 --------------------------------------------------------------
 -- Algebra de Funtores
@@ -21,26 +19,12 @@ data Id x = Id x
 instance Functor Id where
   fmap f (Id x) = Id (f x)
 
-
-
-
-
-
-
-
 -- Dado un tipo cualquiera podemos construir un funtor constante -}
 
 data K a x = K a
 
 instance Functor (K a) where
   fmap _ (K a) = K a
-
-
-
-
-
-
-
 
 -- También tenemos que el producto de funtores es un funtor
 infixr 6 :*:
@@ -50,12 +34,6 @@ data (f :*: g) a = FunProd (f a) (g a)
 instance (Functor f, Functor g) => Functor (f :*: g) where
   fmap :: (a -> b) -> (f :*: g) a -> (f :*: g) b
   fmap h (FunProd fx gx) = FunProd (fmap h fx) (fmap h gx)
-
-
-
-
-
-
 
 {- Suma de funtores (coproducto de funtores) -}
 infixr 5 :+:
@@ -67,14 +45,6 @@ instance (Functor f, Functor g) => Functor (f :+: g) where
   fmap h (Inl fa) = Inl (fmap h fa)
   fmap h (Inr ga) = Inr (fmap h ga)
 
-
-
-
-
-
-
-
-
 {- La composición de funtores es un funtor -}
 infixr 7 :.:
 
@@ -84,16 +54,10 @@ instance (Functor f, Functor g) => Functor (f :.: g) where
    fmap :: (a -> b) -> (f :.: g) a -> (f :.: g) b
    fmap h (FunComp fga) = FunComp (fmap (fmap h) fga)
 
-
-
-
-
-
 {-
   Con estos ingredientes (Id, K, :*:, :+:, :.:) podemos representar
   una gran familia de  tipos de datos
 -}
-
 
 {- Ejemplo:
 
@@ -132,9 +96,6 @@ tres a1 a2 a3 = Inr $ Inr $ Inr $
                 FunProd (Id a1)
                         (FunProd (Id a2) (Id a3))
 
-
-
-
 toG :: Algunos b a -> AlgunosG b a
 toG (Nada b) = nada b
 toG (Uno a) = uno a
@@ -148,7 +109,6 @@ fromG (Inr (Inr (Inl (FunProd (Id a1) (Id a2))))) = Dos a1 a2
 fromG (Inr (Inr (Inr (FunProd (Id a1)
                     (FunProd (Id a2) (Id a3)))))) = Tres a1 a2 a3
 
-
 ------------------------------------
 {-
 Podemos crear una clase para los tipo que podemos darle una representación
@@ -161,20 +121,11 @@ class Generic f where
   toRep :: f a -> Rep f a
   fromRep :: Rep f a -> f a
 
-
-
-
-
-
-
-
 instance Generic (Algunos b) where
   type Rep (Algunos b) = AlgunosG b
 
   toRep = toG
   fromRep = fromG
-
-
 
 -- Otro ejemplo
 
@@ -186,9 +137,6 @@ instance Generic Pair where
   toRep (Pair x y) = FunProd (Id x) (Id y)
   fromRep (FunProd (Id x) (Id y)) = Pair x y
 
-
-
-
 {-
 EJERCICIO
   Dar la instancia de
@@ -197,19 +145,6 @@ EJERCICIO
 
 -}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
   {- Mediante esta representación podemos definir
     funciones genéricas. Por ejemplo, si el funtor es un contenedor
     de números, podemos definir una función que los sume:
@@ -217,16 +152,6 @@ EJERCICIO
 
 class GSum f where
   gsum :: Num a => f a -> a
-
-
-
-
-
-
-
-
-
-
 
 instance GSum Id where
   gsum :: Num a => Id a -> a
@@ -248,8 +173,6 @@ instance (GSum f, GSum g) => GSum (f :*: g) where
 algsum :: Algunos b Integer -> Integer
 algsum = gsum . toG
 
-
-
 sum :: (Generic f, GSum (Rep f), Num a) => f a -> a
 sum = gsum . toRep
 
@@ -264,7 +187,6 @@ crush :: (Generic f, ..., Monoid m) => f m -> m
 
 class Crush Id where
       crush :: (Monoid m) => f m -> m
-
 
 instance Crush Id where
       crush (Id a) = a
@@ -330,16 +252,13 @@ instance GSum [] where
 
 -}
 
-
 {- EJERCICIO: Extender la función crush genérica a tipos recursivos
 -}
-
 
 -- Probarla con diferentes monoides: multiplicar
 -- todos los enteros en una estructura, chequear que todos
 -- los booleanos contenidos son True, que existe alguno True,
 -- sumando todos los números, etc.
-
 
 --------------------------------------------------
 {- Probemos ahora de obtener una representación para

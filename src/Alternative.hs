@@ -19,13 +19,6 @@ class Applicative f => Alternative f where
   empty :: f a
   (<|>) :: f a -> f a -> f a
 
-
-
-
-
-
-
-
 No hay consenso sobre qué leyes deben satisfacer sus instancias.
 Sí hay consenso que estas operaciones deben ser un monoide.
 
@@ -33,30 +26,12 @@ empty <|> x = x
 x <|> empty = x
 (x <|> y) <|> z = x <|> (y <|> z)
 
-
-
-
-
-
-
-
-
-
-
 Pero ¿cómo deben interactuar con las operaciones de Applicative?
 Depende de lo que uno quiera modelar. Para modelar no-determinismo,
 las ecuaciones son (Rivas, Jaskelioff, Schrijvers (2018)):
 
  empty <*> x = empty
  (f <|> g) <*> x = (f <*> x) <|> (g <*> x)
-
-
-
-
-
-
-
-
 
  Ejemplo de instancia
 
@@ -67,24 +42,10 @@ instance Alternative Maybe where
 
 -}
 
-
-
-
-
-
 -- -- Aplicación: Parsers
 class Alternative f => AppParser f where
   sat :: (Char -> Bool) -> f Char
   eof :: f ()
-
-
-
-
-
-
-
-
-
 
   {-
   La clase Alternative ya trae definido las siguientes funciones
@@ -155,14 +116,6 @@ instance Alternative Parser where
   empty = P (const Nothing)
   P a <|> P b = P $ \s -> a s <|> b s
 
-
-
-
-
-
-
-
-
  -- newtype Parser a = P {parse :: String -> Maybe (a,String)}
 
 instance AppParser Parser where
@@ -174,11 +127,6 @@ instance AppParser Parser where
   eof :: Parser ()
   eof = P $ \s -> if null s then Just ((),"") else Nothing
 
-
-
-
-
-
 -----------------
 -- Ejemplos
 -----------------
@@ -187,8 +135,6 @@ listas :: AppParser p => p [Int]
 listas =  token (char '[')
       *>  nat `sepby` token (char ',')
       <* token (char ']')
-
-
 
 nl = char ';'
 
@@ -206,6 +152,8 @@ una cadena que empieza con una minúscula y sigue con
 cualquier caracter alfanumérico
 -}
 
+identifier :: Parser String
+identifier = 
 
 {- Ejercicio
   Chequear que una cadena de paréntesis está bien balanceada con un parser

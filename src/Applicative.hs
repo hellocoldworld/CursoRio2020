@@ -26,17 +26,8 @@ import Data.Maybe
 --   fmap :: ( a ->   b)
 --         -> f a -> f b
 
-
-
-
 -- La función fmap nos da la forma de tomar una función pura de aridad 1
 -- y "levantarla" al functor.
-
-
-
-
-
-
 
 -- ¿Cómo sería una versión de fmap para
 -- funciones de aridad arbitraria?
@@ -53,31 +44,11 @@ import Data.Maybe
 --  fmap3 :: ( a ->   b ->   c ->   d)
 --        -> f a -> f b -> f c -> f d
 
-
-
-
-
-
-
-
-
-
-
-
 -- Creemos una clase con aridad 0 y aridad 2
 
 class Functor f => MultiFunctor f where
    fmap0 :: a -> f a                           -- aridad 0
    fmap2 :: (a -> b -> c) -> f a -> f b -> f c -- aridad 2
-
-
-
-
-
-
-
-
-
 
 -- Con esto nos alcanza para aridad mayores!
 
@@ -101,12 +72,6 @@ currificación, una función de (1+n) argumentos es una función que
 toma un argumento de tipo a y devuelve un tipo b (que toma n
 argumentos) (a -> b),
 
-
-
-
-
-
-
 Entonces podemos representar aridad 0 y aridad n+1.
 
  class Functor f => Applicative f where
@@ -118,27 +83,10 @@ Entonces podemos representar aridad 0 y aridad n+1.
  fmap2 f fa fb     = pure f <*> fa <*> fb
  fmap3 f fa fb fc  = pure f <*> fa <*> fb <*> fc
 
-
-
-
-
-
-
-
-
-
-
-
 ----------------------------------------------------
 -- Los funtores aplicativos nos permiten levantar --
 --   funciones puras de cualquier aridad.         --
 ----------------------------------------------------
-
-
-
-
-
-
 
 Notar que las clases de tipo Applicative y MultiFunctor son
 equivalentes, ya que podemos implementar los métodos de una
@@ -162,12 +110,6 @@ operador infijo <$> (fmap):
  fmap1 f fa        = f <$> fa
  fmap2 f fa fb     = f <$> fa <*> fb
  fmap3 f fa fb fc  = f <$> fa <*> fb <*> fc
-
-
-
-
-
-
 
 Definición de funtor aplicativo (McBride & Paterson 2008)
 ===============================
@@ -193,9 +135,6 @@ interchange
   u <*> pure y = pure ($ y) <*> u
 
 -}
-
-
-
 
 ----------------------------------------------
 -- EJEMPLOS
@@ -229,10 +168,6 @@ Just 3
 > (+) <$> Nothing <*> Just 2
 Nothing
 
-
-
-
-
 Todas las computaciones aplicativas son de la forma
 f <$> x <*> y <*> z
 
@@ -240,18 +175,12 @@ f <$> x <*> y <*> z
 Just "hola mundo."
 -}
 
-
-
-
-
 dist :: Applicative f => [f a] -> f [a]
 dist []     = pure []
 dist (x:xs) = (:) <$> x <*> dist xs
 
 mapFalluto :: (a -> Maybe b) -> [a] -> Maybe [b]
 mapFalluto f = dist . map f
-
-
 
 -----------------------------------------------------
 {- Ejemplo: zipWith
@@ -292,9 +221,6 @@ zipWith4 :: (a -> b -> c -> d -> e)
          -> ZipList a -> ZipList b -> ZipList c -> ZipList d -> ZipList e
 zipWith4 f as bs cs ds = pure f <*> as <*> bs <*> cs <*> ds
 
-
-
-
 ---------------------------------------------------
 -- Modelando un entorno
 
@@ -319,9 +245,6 @@ eval :: Eq a => Exp a -> Env a -> Int
 eval (Var e) = fromMaybe 0 . lookup e
 eval (Val e) = pure e
 eval (Add e1 e2) = (+) <$> eval e1 <*> eval e2
-
-
-
 
 -----------------------------------------------------
 {-
@@ -375,9 +298,6 @@ ej1 = cero *> sucesor *> pure "dos" <* sucesor
 
 ej2 = sucesor *> ej1
 
-
-
-
 ---------------------------------------------------
 -- Algebra de funtores aplicativos.
 -- ================================
@@ -389,7 +309,6 @@ ej2 = sucesor *> ej1
 instance Applicative Id where
   pure = Id
   Id f <*> Id x = Id (f x)
-
 
 {- Ejercicio: Es el producto de funtores aplicativos un aplicativo?
   Dar la instancia o argumentar por qué no lo es.
@@ -411,8 +330,6 @@ instance (Applicative f, Applicative g) => Applicative (f :.: g) where
   pure x = FunComp (pure (pure x))
   FunComp fgh <*> FunComp fgx = FunComp $ (<*>) <$> fgh <*> fgx
 
-
-
 -- ------------------------------------------------
 {- Otro uso de los funtores aplicativos es representar acumuladores
 
@@ -426,7 +343,6 @@ El tipo Const a es un aplicativo, siempre que a sea un monoide.
 instance Monoid a => Applicative (Const a) where
   pure x = Const mempty
   Const m1 <*> Const m2 = Const (m1 `mappend` m2)
-
 
  Usando algunos de los monoides de Bool (All o Any) podemos
  definir las siguientes funciones

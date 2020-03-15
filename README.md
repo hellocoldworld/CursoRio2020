@@ -1,3 +1,7 @@
+Forked from mjaskel
+
+Curso de la escuela de verano con ejercicios resueltos y anotaciones
+
 # Abstracciones en la Práctica de la Programación Funcional
 Material para el curso de la escuela de verano de la Universidad de Rio Cuarto 2020.
 

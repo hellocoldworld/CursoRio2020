@@ -39,7 +39,6 @@ import Control.Applicative
 data Min a = Infinito | N a
        deriving Show
 
-
 instance (Ord a) => Monoid (Min a) where
        mempty = Infinito
        (N a) <> Infinito = N a

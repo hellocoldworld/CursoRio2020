@@ -20,17 +20,10 @@ class Monoid m where
 
 infixr 6 <>  -- precedencia y asociatividad de <>
 
-
-
-
 -- Una instancia de monoide para listas.
 instance Monoid [a] where
   mempty = []
   (<>) = (++)
-
-
-
-
 
 mcat :: Monoid a => [a] -> a
 mcat [] = mempty
@@ -39,10 +32,6 @@ mcat (x:xs) = x <> mcat xs
 --- Listas como monoide libre
 monoidfree :: Monoid m => (a -> m) -> [a] -> m
 monoidfree f = mcat . map f
-
-
-
-
 
 {- Esta no es la única instancia de monoide para listas -}
 newtype RevList a = RevL { getRevL :: [a] }
@@ -66,11 +55,6 @@ instance Monoid (RevList a) where
 
 ejRevList = RevL "mundo" <> RevL "hola "
 
-
-
-
-
-
 --------------------------------
 -- Algunos Monoides
 --------------------------------
@@ -84,10 +68,6 @@ instance Monoid Any where
   Any True  <> _  = Any True
   Any False <> x  = x
 
-
-
-
-
 ejAny1 = Any False <> Any True <> Any True
 
 ejAny2 = mcat [Any False, Any True, Any True]
@@ -95,10 +75,6 @@ ejAny2 = mcat [Any False, Any True, Any True]
 ejAny3 = mcat $ map Any [False,True,True]
 
 ejAny4 = monoidfree Any [False,True,True]
-
-
-
-
 
 --------------------------------
 newtype All = All {getAll :: Bool}
@@ -108,10 +84,6 @@ instance Monoid All where
   mempty = All True
   All False <> _ = All False
   All True  <> x = x
-
-
-
-
 
 ----------------------------------
 -- Instancias con Maybe
@@ -155,7 +127,6 @@ entre listas y RevList, y la de First y Last, es exactamente la misma.
 {- Monoide de endofunciones -}
 {- Ejercicio: Definir el monoide de endofunciones -}
 newtype Endo a = Endo (a -> a)
-
 
 ------------------------------------
 {-
